@@ -56,7 +56,7 @@ const data = [
   };
 
   const createFooterText = title => {
-    const p = document.createElement('p');    
+    const p = document.createElement('p');
     p.textContent = `Все права защищены © ${title}`;
     return p;
   };
@@ -99,6 +99,7 @@ const data = [
    <th>Имя</th>
    <th>Фамилия</th>
    <th>Телефон</th>
+   <th>Редактировать</th>
    </tr>`);
 
     const tbody = document.createElement('tbody');
@@ -146,11 +147,10 @@ const data = [
     }]);
     form.append(...buttonGroup.btns);
 
-    overlay.append(form);
-
+    overlay.append(form);    
     return {
       overlay,
-      form,
+      form      
     }
   };
 
@@ -170,7 +170,7 @@ const data = [
     }]);
 
     const table = createTable();
-    const form = createForm();
+    const form = createForm();  
 
     header.headerContainer.append(logo);
 
@@ -180,9 +180,14 @@ const data = [
 
     main.mainContainer.append(buttonGroup.btnWapper, table, form.overlay);
     app.append(header, main, footer);
-
+    
     return {
       list: table.tbody,
+      logo,
+      btnAdd: buttonGroup.btns[0],
+      formOverlay: form.overlay,
+      form: form.form,
+      btnClose: form.form[0],
     };
   };
 
@@ -207,24 +212,65 @@ const data = [
     phoneLink.textContent = phone;
     tdPhone.append(phoneLink);
 
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    const tdEdit = document.createElement('td');
+    tdEdit.classList.add('edit');
+    const buttonEdit = document.createElement('button');
+    buttonEdit.classList.add('edit-icon');
+    tdEdit.append(buttonEdit);
+
+    tr.phoneLink = phoneLink;
+
+
+
+
+    tr.append(tdDel, tdName, tdSurname, tdPhone, tdEdit);
 
     return tr;
   }
-  
+
   const renderContacts = (elem, data) => {
     const allRow = data.map(createRow);
     elem.append(...allRow);
+    return allRow;
+  }
+
+  const hoverRow = (allRows, logo) => {
+    const text = logo.textContent;
+    allRows.forEach(contact => {
+      contact.addEventListener('mouseenter', () => {
+        logo.textContent = contact.phoneLink.textContent;
+      });
+      contact.addEventListener('mouseleave', () => {
+        logo.textContent = text;
+      });
+    });
   }
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
 
-    const { list } = phoneBook;
+    const { list, logo, btnAdd, formOverlay, form, btnClose } = phoneBook;
 
-    renderContacts(list, data);
+    const allRows = renderContacts(list, data);
     //функционал
+    hoverRow(allRows, logo);
+
+    btnAdd.addEventListener('click', () => {
+      formOverlay.classList.add('is-visible');
+    });
+
+    btnClose.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+    });
+
+    formOverlay.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
   };
 
   window.phoneBookInit = init;

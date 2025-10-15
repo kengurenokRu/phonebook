@@ -38,6 +38,20 @@ body {
   background-position: center;
 }
 
+.edit-icon {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: none;
+  background-color: transparent;
+  background-image: url("../img/edit.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+
+
 .delete.is-visible {
   width: 10px;
   display: table-cell;
@@ -116,6 +130,7 @@ body {
 }
 
 .del-icon:hover,
+.edit-icon:hover,
 .close:hover {
   opacity: 0.7;
 }
