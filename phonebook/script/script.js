@@ -189,6 +189,7 @@ const data = [
       formOverlay: form.overlay,
       form: form.form,
       btnClose: form.form[0],
+      table,
     };
   };
 
@@ -260,6 +261,7 @@ const data = [
       formOverlay,
       form,
       btnClose,
+      table,
     } = phoneBook;
 
     const allRows = renderContacts(list, data);
@@ -288,11 +290,23 @@ const data = [
       }
     });
 
-    list.addEventListener('click', e => {
+    const sortList = (column) => {
+      const sortedRows = Array.from(table.rows)
+          .slice(1)
+          .sort((rowA, rowB) => rowA.cells[column].innerHTML > rowB.cells[column].innerHTML ? 1 : -1);
+        table.tBodies[0].append(...sortedRows);
+    }
+
+    table.addEventListener('click', e => {
       if (e.target.closest('.del-icon')) {
         e.target.closest('.contact').remove();
-      }
+      } else if (e.target.textContent === 'Имя') {
+        sortList(1);
+      } else if (e.target.textContent === 'Фамилия') {
+        sortList(2);
+      };
     });
+
 
     setTimeout(() => {
       const contact = createRow({
