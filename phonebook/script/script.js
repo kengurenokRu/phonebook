@@ -1,6 +1,6 @@
 'use strict';
 
-const data = [
+/*const data = [
   {
     name: 'Иван',
     surname: 'Петров',
@@ -21,12 +21,12 @@ const data = [
     surname: 'Попова',
     phone: '+79876543210',
   },
-];
+];*/
 
 {
-  const addContactData = (contact) => {
+  /*const addContactData = (contact) => {
     data.push(contact);
-  };
+  };*/
 
   const createContainer = () => {
     const container = document.createElement('div');
@@ -235,21 +235,34 @@ const data = [
   }
 
   const renderContacts = (elem, data) => {
-    const allRow = data.map(createRow);
-    elem.append(...allRow);
-    return allRow;
+    console.log(data);
+    if (data !== null) {
+      if (!Array.isArray(data)) {
+        const row = createRow(data);
+        elem.append(row);
+        return [row];
+      }
+      else {
+        const allRow = data.map(createRow);
+        elem.append(...allRow);
+        return allRow;
+      }
+    }
+    else return null;
   }
 
   const hoverRow = (allRows, logo) => {
-    const text = logo.textContent;
-    allRows.forEach(contact => {
-      contact.addEventListener('mouseenter', () => {
-        logo.textContent = contact.phoneLink.textContent;
-      });
-      contact.addEventListener('mouseleave', () => {
-        logo.textContent = text;
-      });
-    });
+     const text = logo.textContent;
+      if (allRows !== null) {
+       allRows.forEach(contact => {
+         contact.addEventListener('mouseenter', () => {
+           logo.textContent = contact.phoneLink.textContent;
+         });
+         contact.addEventListener('mouseleave', () => {
+           logo.textContent = text;
+         });
+       });
+     }
   }
 
   const modalControl = (btnAdd, btnClose, formOverlay, table) => {
@@ -297,7 +310,7 @@ const data = [
     return { closeModal, }
   };
 
-  const deleteControl = (btnDel, list) => {
+  const deleteControl = (btnDel, list, removeStorage, key) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
@@ -307,6 +320,8 @@ const data = [
     list.addEventListener('click', e => {
       if (e.target.closest('.del-icon')) {
         e.target.closest('.contact').remove();
+        const phone = e.target.closest('.contact').children[3].textContent;
+        removeStorage(key, phone);
       }
     });
   }
@@ -315,19 +330,49 @@ const data = [
     list.append(createRow(contact));
   };
 
-  const formControl = (form, list, closeModal) => {
+  const formControl = (form, list, closeModal, setStorage, key) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
-      addContactData(newContact);
+      setStorage(key, newContact);
       addContactPage(newContact, list);
       form.reset();
       closeModal();
     });
   };
 
+
+  const storageControl = () => {
+    const getStorage = (key) => {
+      return JSON.parse(localStorage.getItem(key));
+    };
+
+    const setStorage = (key, obj) => {
+      const data = [];
+      const tempData = JSON.parse(localStorage.getItem(key));
+      if (tempData !== null) {
+        data.push(...tempData);        
+      }
+      data.push(obj);
+      localStorage.setItem(key, JSON.stringify(data));
+    };
+
+    const removeStorage = (key, phone) => {
+      const data = JSON.parse(localStorage.getItem(key));
+      console.log(phone);
+      data.forEach((el, index) => {
+        if (el.phone == phone) data.splice(index, 1)
+      });  
+      console.log(data);
+      localStorage.setItem(key, JSON.stringify(data));
+    };
+
+    return { getStorage, setStorage, removeStorage, };
+  }
+
   const init = (selectorApp, title) => {
+    const key = 'Анастасия';
     const app = document.querySelector(selectorApp);
     const {
       list,
@@ -339,14 +384,16 @@ const data = [
       btnClose,
       table,
     } = renderPhoneBook(app, title);
+    const { getStorage, setStorage, removeStorage } = storageControl();
+    const data = getStorage(key);
     const allRows = renderContacts(list, data);
     const { closeModal } = modalControl(btnAdd, btnClose, overlay, table);
-    
+
     //функционал
     hoverRow(allRows, logo);
 
-    deleteControl(btnDel, list);
-    formControl(form, list, closeModal);    
+    deleteControl(btnDel, list, removeStorage, key);
+    formControl(form, list, closeModal, setStorage, key);
   };
 
   window.phoneBookInit = init;
