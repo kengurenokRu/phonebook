@@ -1,33 +1,6 @@
 'use strict';
 
-/*const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];*/
-
 {
-  /*const addContactData = (contact) => {
-    data.push(contact);
-  };*/
-
   const createContainer = () => {
     const container = document.createElement('div');
     container.classList.add('container');
@@ -158,44 +131,6 @@
     }
   };
 
-  const renderPhoneBook = (app, title) => {
-    const header = createHeader();
-    const logo = createLogo(title);
-    const main = createMain();
-    const buttonGroup = createButtonGroup([{
-      className: 'btn btn-primary mr-3',
-      type: 'button',
-      text: 'Добавить',
-    },
-    {
-      className: 'btn btn-danger',
-      type: 'button',
-      text: 'Удалить',
-    }]);
-
-    const table = createTable();
-    const { form, overlay } = createForm();
-    header.headerContainer.append(logo);
-
-    const footer = createFooter();
-    const footerText = createFooterText(title);
-    footer.footerContainer.append(footerText);
-
-    main.mainContainer.append(buttonGroup.btnWapper, table, overlay);
-    app.append(header, main, footer);
-
-    return {
-      list: table.tbody,
-      logo,
-      btnAdd: buttonGroup.btns[0],
-      btnDel: buttonGroup.btns[1],
-      overlay,
-      form,
-      btnClose: form[0],
-      table,
-    };
-  };
-
   const createRow = ({ name: firstName, surname, phone }) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
@@ -234,8 +169,45 @@
     return tr;
   }
 
+  const renderPhoneBook = (app, title) => {
+    const header = createHeader();
+    const logo = createLogo(title);
+    const main = createMain();
+    const buttonGroup = createButtonGroup([{
+      className: 'btn btn-primary mr-3',
+      type: 'button',
+      text: 'Добавить',
+    },
+    {
+      className: 'btn btn-danger',
+      type: 'button',
+      text: 'Удалить',
+    }]);
+
+    const table = createTable();
+    const { form, overlay } = createForm();
+    header.headerContainer.append(logo);
+
+    const footer = createFooter();
+    const footerText = createFooterText(title);
+    footer.footerContainer.append(footerText);
+
+    main.mainContainer.append(buttonGroup.btnWapper, table, overlay);
+    app.append(header, main, footer);
+
+    return {
+      list: table.tbody,
+      logo,
+      btnAdd: buttonGroup.btns[0],
+      btnDel: buttonGroup.btns[1],
+      overlay,
+      form,
+      btnClose: form[0],
+      table,
+    };
+  };
+
   const renderContacts = (elem, data) => {
-    console.log(data);
     if (data !== null) {
       if (!Array.isArray(data)) {
         const row = createRow(data);
@@ -279,7 +251,6 @@
     const closeModal = () => {
       formOverlay.classList.remove('is-visible');
     }
-
 
     btnAdd.addEventListener('click', () => {
       openModal();
@@ -349,11 +320,17 @@
     });
   };
 
-
   const storageControl = () => {
+
     const getStorage = (key) => {
+      const temp = JSON.parse(localStorage.getItem(key));
+      console.log(temp);
       return JSON.parse(localStorage.getItem(key));
     };
+
+    const saveToStarage = (key, data) => {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
 
     const setStorage = (key, obj) => {
       const data = [];
@@ -362,7 +339,7 @@
         data.push(...tempData);
       }
       data.push(obj);
-      localStorage.setItem(key, JSON.stringify(data));
+      saveToStarage(key, data);
     };
 
     const removeStorage = (key, phone) => {
@@ -372,13 +349,14 @@
         if (el.phone == phone) data.splice(index, 1)
       });
       console.log(data);
-      localStorage.setItem(key, JSON.stringify(data));
+      saveToStarage(key, data);
     };
 
     return { getStorage, setStorage, removeStorage, };
   }
 
   const init = (selectorApp, title) => {
+    //localStorage.clear();
     const key = 'Анастасия';
     const app = document.querySelector(selectorApp);
     const {
