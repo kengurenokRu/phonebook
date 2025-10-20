@@ -251,18 +251,23 @@
     else return null;
   }
 
-  const hoverRow = (allRows, logo) => {
-     const text = logo.textContent;
-      if (allRows !== null) {
-       allRows.forEach(contact => {
-         contact.addEventListener('mouseenter', () => {
-           logo.textContent = contact.phoneLink.textContent;
-         });
-         contact.addEventListener('mouseleave', () => {
-           logo.textContent = text;
-         });
-       });
-     }
+  const hoverRow = (row, logo) => {
+    const text = logo.textContent;
+    row.addEventListener('mouseenter', () => {
+      logo.textContent = row.phoneLink.textContent;
+    });
+    row.addEventListener('mouseleave', () => {
+      logo.textContent = text;
+    });
+  }
+
+  const hoverRows = (allRows, logo) => {
+
+    if (allRows !== null) {
+      allRows.forEach(contact => {
+        hoverRow(contact, logo);
+      });
+    }
   }
 
   const modalControl = (btnAdd, btnClose, formOverlay, table) => {
@@ -326,17 +331,19 @@
     });
   }
 
-  const addContactPage = (contact, list) => {
-    list.append(createRow(contact));
+  const addContactPage = (contact, list, logo) => {
+    const row = createRow(contact);
+    list.append(row);
+    hoverRow(row, logo);
   };
 
-  const formControl = (form, list, closeModal, setStorage, key) => {
+  const formControl = (form, list, closeModal, setStorage, key, logo) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
       setStorage(key, newContact);
-      addContactPage(newContact, list);
+      addContactPage(newContact, list, logo);
       form.reset();
       closeModal();
     });
@@ -352,7 +359,7 @@
       const data = [];
       const tempData = JSON.parse(localStorage.getItem(key));
       if (tempData !== null) {
-        data.push(...tempData);        
+        data.push(...tempData);
       }
       data.push(obj);
       localStorage.setItem(key, JSON.stringify(data));
@@ -363,7 +370,7 @@
       console.log(phone);
       data.forEach((el, index) => {
         if (el.phone == phone) data.splice(index, 1)
-      });  
+      });
       console.log(data);
       localStorage.setItem(key, JSON.stringify(data));
     };
@@ -390,10 +397,10 @@
     const { closeModal } = modalControl(btnAdd, btnClose, overlay, table);
 
     //функционал
-    hoverRow(allRows, logo);
+    hoverRows(allRows, logo);
 
     deleteControl(btnDel, list, removeStorage, key);
-    formControl(form, list, closeModal, setStorage, key);
+    formControl(form, list, closeModal, setStorage, key, logo);
   };
 
   window.phoneBookInit = init;
