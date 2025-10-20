@@ -1,12 +1,7 @@
-'use strict';
+import render from './render.js';
+import {createRow} from './createElements.js';
 
-const {
-  hoverRow,  
-} = require('./render.js');
-
-const {  
-  createRow,
-} = require('./createElements.js');
+const {hoverRow} = render;
 
 const modalControl = (btnAdd, btnClose, formOverlay, table) => {
 
@@ -86,8 +81,8 @@ const formControl = (form, list, closeModal, setStorage, key, logo) => {
   });
 };
 
-module.exports = {
+export default {
   modalControl,
-  deleteControl,  
+  deleteControl,
   formControl,
 };

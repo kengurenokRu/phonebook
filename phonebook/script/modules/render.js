@@ -1,4 +1,4 @@
-'use strict';
+import * as createElements from './createElements.js';
 
 const {
   createHeader,
@@ -10,7 +10,7 @@ const {
   createTable,
   createForm,
   createRow,
-} = require('./createElements.js');
+} = createElements;
 
 const hoverRow = (row, logo) => {
   const text = logo.textContent;
@@ -84,7 +84,7 @@ const renderContacts = (elem, data) => {
   else return null;
 }
 
-module.exports = {
+export default {
   hoverRow,
   hoverRows,
   renderPhoneBook,

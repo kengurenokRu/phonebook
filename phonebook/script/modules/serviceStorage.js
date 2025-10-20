@@ -1,6 +1,4 @@
-'use strict';
-
-const storageControl = () => {
+export const storageControl = () => {
 
   const getStorage = (key) => {
     const temp = JSON.parse(localStorage.getItem(key));
@@ -34,7 +32,3 @@ const storageControl = () => {
 
   return { getStorage, setStorage, removeStorage, };
 }
-
-module.exports = {
-  storageControl,
-};
